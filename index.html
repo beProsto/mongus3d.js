@@ -6,16 +6,23 @@
 	<script>
 		const comDataUrl = "https://beprosto.github.io/outofthebox/data/com.dat";
 		async function getChatText() {
-			let data = await fetch(comDataUrl);
-			data.text().then(function (text) {
-				console.log("update!");
-				document.getElementById("chatLog").innerHTML = text;
-			});
+			let xhr = new XMLHttpRequest();
+			xhr.open("GET", comDataUrl);
+			xhr.onload = function () {
+				let txt = xhr.responseText;
+				if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
+					console.log("update!");
+					document.getElementById("chatLog").innerHTML = txt;
+				} else {
+					console.error(txt);
+				}
+			};
+			xhr.send();
 		}
 		getChatText();
 		async function postTextBox() {
 			let xhr = new XMLHttpRequest();
-			xhr.open("PUT", comDataUrl); 
+			xhr.open("POST", comDataUrl); 
 			xhr.onload = function () {
 				let txt = xhr.responseText;
 				if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
