@@ -2,20 +2,40 @@
 <html>
 <head>
 	<title>beProsto's communicator</title>
+	<meta charset="utf-8">
 	<script>
+		async function getChatText() {
+			let data = await fetch("/data/com.dat");
+			data.text().then(function (text) {
+				console.log("update!");
+				document.getElementById("chatLog").innerHTML = text;
+			});
+		}
+		getChatText();
+		async function postTextBox() {
+			let xhr = new XMLHttpRequest();
+			xhr.open("PUT", "/data/com.dat"); 
+			xhr.onload = function () {
+				let txt = xhr.responseText;
+				if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
+					console.log(txt);
+				} else {
+					console.error(txt);
+				}
+			};
+			let toSend = document.getElementById("chatInput").value;
+			xhr.send(toSend);
+			document.getElementById("chatInput").value = "";
+			await getChatText();
+		}
+
 		window.onkeydown = async function(e) {
 			if(e.code == "Enter") {
-				document.getElementById("chatLog").innerHTML += "> " + document.getElementById("chatInput").value + "<br>";
-				document.getElementById("chatInput").value = "";
-				let fetchData = { 
-					method: 'POST', 
-					body: document.getElementById("chatLog").innerHTML
-				};
-				fetch("/data/com.dat", fetchData).then(function(e) {
-					console.log("data sent!");
-				});
+				await postTextBox();
 			}
 		};
+
+		setInterval(getChatText, 350);
 	</script>
 </head>
 
