@@ -9,7 +9,7 @@
 				document.getElementById("chatInput").value = "";
 				let fetchData = { 
 					method: 'POST', 
-					body: document.getElementById("chatLog").innerHTML,
+					body: { text: document.getElementById("chatLog").innerHTML },
 					headers: new Headers()
 				};
 				await fetch("./data/com.dat", fetchData);
