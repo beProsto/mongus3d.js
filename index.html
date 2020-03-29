@@ -9,8 +9,7 @@
 				document.getElementById("chatInput").value = "";
 				let fetchData = { 
 					method: 'POST', 
-					body: { text: document.getElementById("chatLog").innerHTML },
-					headers: new Headers()
+					body: document.getElementById("chatLog").innerHTML
 				};
 				fetch("/data/com.dat", fetchData).then(function(e) {
 					console.log("data sent!");
