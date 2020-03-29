@@ -12,7 +12,9 @@
 					body: { text: document.getElementById("chatLog").innerHTML },
 					headers: new Headers()
 				};
-				await fetch("./data/com.dat", fetchData);
+				fetch("/data/com.dat", fetchData).then(function(e) {
+					console.log("data sent!");
+				});
 			}
 		};
 	</script>
