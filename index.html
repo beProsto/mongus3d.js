@@ -4,8 +4,9 @@
 	<title>beProsto's communicator</title>
 	<meta charset="utf-8">
 	<script>
-		async function getChatText() {
-			let data = await fetch("/data/com.dat");
+		const comDataUrl = "https://beprosto.github.io/outofthebox/data/com.dat";
+		async function getChatText(comDataUrl) {
+			let data = await fetch();
 			data.text().then(function (text) {
 				console.log("update!");
 				document.getElementById("chatLog").innerHTML = text;
@@ -14,7 +15,7 @@
 		getChatText();
 		async function postTextBox() {
 			let xhr = new XMLHttpRequest();
-			xhr.open("PUT", "/data/com.dat"); 
+			xhr.open("PUT", comDataUrl); 
 			xhr.onload = function () {
 				let txt = xhr.responseText;
 				if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
