@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>beProsto's communicator</title>
+	<script>
+		window.onkeydown = async function(e) {
+			if(e.code == "Enter") {
+				document.getElementById("chatLog").innerHTML += "> " + document.getElementById("chatInput").value + "<br>";
+				document.getElementById("chatInput").value = "";
+				let fetchData = { 
+					method: 'POST', 
+					body: document.getElementById("chatLog").innerHTML,
+					headers: new Headers()
+				};
+				await fetch("./data/com.dat", fetchData);
+			}
+		};
+	</script>
+</head>
+
+<body>
+	<div id="chatLog"></div>
+	<label for="chatInput">></label>
+	<input type="text" id="chatInput" name="chatInput"></input>
+</body>
+</html>
