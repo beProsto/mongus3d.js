@@ -5,8 +5,8 @@
 	<meta charset="utf-8">
 	<script>
 		const comDataUrl = "https://beprosto.github.io/outofthebox/data/com.dat";
-		async function getChatText(comDataUrl) {
-			let data = await fetch();
+		async function getChatText() {
+			let data = await fetch(comDataUrl);
 			data.text().then(function (text) {
 				console.log("update!");
 				document.getElementById("chatLog").innerHTML = text;
