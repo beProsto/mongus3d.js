@@ -4,8 +4,8 @@
 	<title>beProsto's communicator</title>
 	<meta charset="utf-8">
 	<script>
-		const comDataUrl = "https://beprosto.github.io/outofthebox/chatdata.txt";
-		async function getChatText() {
+		const comDataUrl = "/chatdata.txt";
+		function getChatText() {
 			let xhr = new XMLHttpRequest();
 			xhr.open("GET", comDataUrl);
 			xhr.onload = function () {
@@ -20,7 +20,7 @@
 			xhr.send();
 		}
 		getChatText();
-		async function postTextBox() {
+		function postTextBox() {
 			let xhr = new XMLHttpRequest();
 			xhr.open("POST", comDataUrl); 
 			xhr.onload = function () {
@@ -31,19 +31,18 @@
 					console.error(txt);
 				}
 			};
-			let toSend = document.getElementById("chatInput").value;
+			let toSend = document.getElementById("chatInput").value + "<br>";
 			xhr.send(toSend);
 			document.getElementById("chatInput").value = "";
-			await getChatText();
 		}
 
-		window.onkeydown = async function(e) {
+		window.onkeydown = function(e) {
 			if(e.code == "Enter") {
-				await postTextBox();
+				postTextBox();
 			}
 		};
 
-		setInterval(getChatText, 350);
+		setInterval(getChatText, 300);
 	</script>
 </head>
 
