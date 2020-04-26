@@ -26,11 +26,11 @@ const server = http.createServer(function(req, res) {
   
   
   if(req.method == "GET" && req.url != "/favicon.ico" && req.url != "/chatdata.txt") {
-    fs.readFile(__dirname + (req.url == "/" ? "/index.html" : req.url), function(err, data) {
+    fs.readFile(__dirname + "/index.html", function(err, data) {
       if(err) {
         console.error(err); 
       }
-      res.end(data.toString());
+      res.end(String(data));
     });
   }
   else if(req.method == "GET" && req.url == "/chatdata.txt") {
