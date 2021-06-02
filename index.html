@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>beProsto's communicator</title>
+	<title>cum-municator</title>
 	<meta charset="utf-8">
 	<script>
 		const comDataUrl = "/chatdata.txt";
+
 		function getChatText() {
 			let xhr = new XMLHttpRequest();
 			xhr.open("GET", comDataUrl);
@@ -19,21 +20,25 @@
 			};
 			xhr.send();
 		}
-		getChatText();
 		function postTextBox() {
-			let xhr = new XMLHttpRequest();
-			xhr.open("PUT", comDataUrl); 
-			xhr.onload = function () {
-				let txt = xhr.responseText;
-				if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
-					console.log(txt);
-				} else {
-					console.error(txt);
-				}
-			};
-			let toSend = document.getElementById("chatInput").value + "<br>";
-			xhr.send(toSend);
-			document.getElementById("chatInput").value = "";
+			if(document.getElementById("nickInput").value) {
+				let xhr = new XMLHttpRequest();
+				xhr.open("PUT", comDataUrl); 
+				xhr.onload = function () {
+					let txt = xhr.responseText;
+					if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
+						console.log(txt);
+					} else {
+						console.error(txt);
+					}
+				};
+				let toSend = document.getElementById("nickInput").value + ": " + document.getElementById("chatInput").value + "<br>";
+				xhr.send(toSend);
+				document.getElementById("chatInput").value = "";
+			}
+			else {
+				alert("Nickname se ustaw wpierw");
+			}
 		}
 
 		window.onkeydown = function(e) {
@@ -42,6 +47,7 @@
 			}
 		};
 
+		getChatText();
 		setInterval(getChatText, 300);
 	</script>
 </head>
@@ -49,8 +55,12 @@
 <body>
 	<div id="chatLog"></div>
 	<br>	
-	<label for="chatInput">></label>
+
+	<label for="nickInput">Nickname:</label>
+	<input type="text" id="nickInput" name="nickInput"></input>
+	<label for="chatInput">Post:</label>
 	<input type="text" id="chatInput" name="chatInput"></input>
 	<button id="chatButton" onclick="postTextBox()">post</button>
+	<a href="/amogus.html"><button id="amongus">amogus</button></a>
 </body>
 </html>

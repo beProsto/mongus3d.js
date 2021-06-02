@@ -2,7 +2,7 @@ const http = require("http");
 const fs = require('fs');
 
 const hostname = "0.0.0.0";
-const port = 8080;
+const port = 80;
 
 let chatData = "";
 
@@ -25,7 +25,7 @@ const server = http.createServer(function(req, res) {
   });
   
   
-  if(req.method == "GET" && req.url != "/favicon.ico" && req.url != "/chatdata.txt") {
+  if(req.method == "GET" && req.url == "/") {
     fs.readFile(__dirname + "/index.html", function(err, data) {
       if(err) {
         console.error(err); 
@@ -35,6 +35,14 @@ const server = http.createServer(function(req, res) {
   }
   else if(req.method == "GET" && req.url == "/chatdata.txt") {
     res.end(chatData);
+  }
+  else if(req.method == "GET") {
+    fs.readFile(__dirname + req.url, function(err, data) {
+      if(err) {
+        console.error(err); 
+      }
+      res.end(String(data));
+    });
   }
 });
 
