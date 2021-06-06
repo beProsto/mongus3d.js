@@ -35,10 +35,12 @@ const server = http.createServer(function(req, res) {
 
 			if(!isFound) {
 				//nicks[nicks.length] = String(chunk);
+				console.log("Player with nickname: \"" + String(chunk) + "\" has logged in. Assigned ID " + String(nicks.length));
 				nicks.push(String(chunk));
 				res.end("Posted");
 			}
 			else {
+				console.log("Player tried to assign nickname: \"" + String(chunk) + "\", failed - already taken.");
 				res.end("ErrNickFound");
 			}
 
