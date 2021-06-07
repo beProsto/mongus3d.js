@@ -92,10 +92,22 @@ function beginGame() {
 	material2.setModel(transMat);
 	material2.setColor([0.3, 0.3, 1.0, 1.0]);
 
+	canvas.requestFullscreen();
+	
+	let pointer_locked = false;
 	function onFrame() { 
 		glMatrix.mat4.perspective(projMat, 90.0, canvas.width / canvas.height, 0.1, 1000.0);
 		material.setProjection(projMat);
 		material2.setProjection(projMat);
+		
+		if(!pointer_locked) {
+			if(!(document.pointerLockElement === canvas)) {
+				canvas.requestPointerLock();
+			}
+			else {
+				pointer_locked = true;
+			}
+		}
 
 		if(pressedKeys["ArrowRight"]) {
 			pos[0] += 0.1;
@@ -116,6 +128,7 @@ function beginGame() {
 		}
 
 		if(pressedKeys["KeyE"]) {
+			canvas.requestFullscreen();
 			canvas.requestPointerLock();
 		}
 
