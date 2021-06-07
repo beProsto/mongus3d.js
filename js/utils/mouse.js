@@ -27,7 +27,15 @@ window.ontouchstart = function(e) {
 	
 	mouse.pressedButtons[0] = true; 
 };
-window.ontouchend = function(e) { mouse.pressedButtons[0] = false; };
-window.ontouchcancel = function(e) { mouse.pressedButtons[0] = false; };
+window.ontouchend = function(e) { 
+	mouse.pressedButtons[0] = false; 
+	mouse.velocity[0] = 0.0;
+	mouse.velocity[1] = 0.0;
+};
+window.ontouchcancel = function(e) { 
+	mouse.pressedButtons[0] = false; 
+	mouse.velocity[0] = 0.0;
+	mouse.velocity[1] = 0.0;
+};
 
 window.oncontextmenu = function(e) { return false; };

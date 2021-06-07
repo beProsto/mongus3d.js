@@ -134,6 +134,10 @@ function beginGame() {
 			rot[0] += mouse.velocity[1] * 0.01;
 		}
 
+		if(pressedKeys["KeyE"]) {
+			canvas.requestPointerLock();
+		}
+
 		glMatrix.mat4.translate(transMat, identityMatrix, [0.0, 2.5, 0.0]);
 		transformTRS(transMat, transMat, pos, rot);
 		glMatrix.mat4.translate(transMat, transMat, [0.0, -2.5, 0.0]);
@@ -149,6 +153,8 @@ function beginGame() {
 		renderer.draw(amogusIdle, material); 
 		renderer.draw(amogusEye, material2); 
 		
+		mouse.velocity = [0.0, 0.0];
+
 		window.requestAnimationFrame(onFrame);
 	}
 	window.requestAnimationFrame(onFrame);

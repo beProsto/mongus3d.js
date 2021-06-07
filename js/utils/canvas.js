@@ -1,4 +1,4 @@
 let canvas = null;
 
-let lockMouse = window.requestPointerLock || window.mozRequestPointerLock;
-let unlockMouse = document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+let lockMouse = document.requestPointerLock || document.mozRequestPointerLock;
+let unlockMouse = document.exitPointerLock || document.mozExitPointerLock;
