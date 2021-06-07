@@ -92,43 +92,24 @@ function beginGame() {
 	material2.setModel(transMat);
 	material2.setColor([0.3, 0.3, 1.0, 1.0]);
 
-	let lastMousePosition = [0.0, 0.0];
-	lastMousePosition[0] = mouse.position[0];
-	lastMousePosition[1] = mouse.position[1];
-
-	let lastMousePositionSet = false;
-
 	function onFrame() { 
 		glMatrix.mat4.perspective(projMat, 90.0, canvas.width / canvas.height, 0.1, 1000.0);
 		material.setProjection(projMat);
 		material2.setProjection(projMat);
 
 		if(pressedKeys["ArrowRight"]) {
-			rot[1] -= 0.1;
+			pos[0] += 0.1;
 		}
 		if(pressedKeys["ArrowLeft"]) {
-			rot[1] += 0.1;
+			pos[0] -= 0.1;
 		}
 		if(pressedKeys["ArrowUp"]) {
-			rot[0] -= 0.1;
+			pos[2] -= 0.1;
 		}
 		if(pressedKeys["ArrowDown"]) {
-			rot[0] += 0.1;
+			pos[2] += 0.1;
 		}
 
-		// if(mouse.pressedButtons[0]) {
-		// 	if(lastMousePositionSet) {
-		// 		rot[1] += (mouse.position[0] - lastMousePosition[0]) * 0.01;
-		// 		rot[0] += (mouse.position[1] - lastMousePosition[1]) * 0.01;
-		// 	}
-
-		// 	lastMousePosition[0] = mouse.position[0];
-		// 	lastMousePosition[1] = mouse.position[1];
-		// 	lastMousePositionSet = true;
-		// }
-		// else {
-		// 	lastMousePositionSet = false;
-		// }
 		if(mouse.pressedButtons[0]) {
 			rot[1] += mouse.velocity[0] * 0.01;
 			rot[0] += mouse.velocity[1] * 0.01;
