@@ -161,6 +161,12 @@ const ezgfx = {
 						1.0, 0.0,
 							0.0, 0.0, 1.0 
 			];
+			ezgfxGlobals.identityMatrix = new Float32Array([
+				1.0, 0.0, 0.0, 0.0,
+				0.0, 1.0, 0.0, 0.0,
+				0.0, 0.0, 1.0, 0.0,
+				0.0, 0.0, 0.0, 1.0
+			]);
 		}
 		depthTesting(enable) {
 			if(enable && !this.depthTest) {
