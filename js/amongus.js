@@ -1,6 +1,8 @@
 const nickCheckUrl = "/nicknamecheck";
 let nick = "";
 
+let gameBegun  = false;
+
 document.getElementById("play-button").onclick = function() {
 	if(document.getElementById("nickInput").value) {
 		nick = document.getElementById("nickInput").value;
@@ -13,7 +15,10 @@ document.getElementById("play-button").onclick = function() {
 					alert("gracz z tym pseudonimem już dołączył");
 				}
 				else if(txt == "Posted") {
-					beginGame();
+					if(!gameBegun) {
+						gameBegun = true;
+						beginGame();
+					}
 				}
 			} else {
 				console.error(txt);
@@ -27,7 +32,7 @@ document.getElementById("play-button").onclick = function() {
 };
 
 function beginGame() {
-	canvas = document.createElement("canvas"); 
+	if(canvas == null) { canvas = document.createElement("canvas"); } 
 	gl = canvas.getContext("webgl2"); 
 	if(!gl) { 
 		alert("This browser does not support WebGL 2."); 
@@ -48,51 +53,29 @@ function beginGame() {
 	renderer.depthTesting(true); 
 	renderer.clear([0.3, 1.0, 0.4, 1.0]); 
 
+	const camera = new Camera();
+
 	const amogusIdle = new ezgfx.Mesh();
 	amogusIdle.loadFromOBJ("/obj/amongus_idle.obj");
 	const amogusEye = new ezgfx.Mesh();
 	amogusEye.loadFromOBJ("/obj/amongus_eyes.obj");
 	
+	let tmat = glMatrix.mat4.create();
+	transformTRS(tmat, ezgfxGlobals.identityMatrix, [0.0, 0.0, -5.0]);
+
 	const material = new ezgfx.Material();
-
+	material.setModel(tmat);
 	const material2 = new ezgfx.Material();
-
-	let projMat = glMatrix.mat4.create();
-	glMatrix.mat4.perspective(projMat, 3.14159 / 2.0, canvas.width / canvas.height, 0.1, 1000.0);
-	
-	let transMat = glMatrix.mat4.create();
-	let pos = [0.0, -2.5, -5.0];
-	let rot = [0.0, 0.0, 0.0];
-	glMatrix.mat4.translate(transMat, transMat, pos);
-
-	console.log(projMat);
-	console.log(transMat);
-
-	const identityMatrix = new Float32Array([
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	]);
-
-	material.setProjection(projMat);
-	material.setView(identityMatrix);
-	material.setModel(transMat);
+	material2.setModel(tmat);
 	material.setColor([1.0, 0.3, 0.3, 1.0]);
-
-	material2.setProjection(projMat);
-	material2.setView(identityMatrix);
-	material2.setModel(transMat);
 	material2.setColor([0.3, 0.3, 1.0, 1.0]);
 
 	canvas.requestFullscreen();
 	
+	camera.position[1] = 4.5;
+
 	let pointer_locked = false;
 	function onFrame() { 
-		glMatrix.mat4.perspective(projMat, 90.0, canvas.width / canvas.height, 0.1, 1000.0);
-		material.setProjection(projMat);
-		material2.setProjection(projMat);
-		
 		if(!pointer_locked) {
 			if(!(document.pointerLockElement === canvas)) {
 				canvas.requestPointerLock();
@@ -102,37 +85,35 @@ function beginGame() {
 			}
 		}
 
-		if(pressedKeys["ArrowRight"]) {
-			pos[0] += 0.1;
+		camera.rotation = [camera.rotation[0], camera.rotation[1] - mouse.velocity[0] * 0.01, camera.rotation[2]];
+		camera.rotation = [camera.rotation[0] - mouse.velocity[1] * 0.01, camera.rotation[1], camera.rotation[2]];
+
+		let dir = glMatrix.mat4.create();
+		transformTRS(dir, dir, [0.0, 0.0, 0.0], camera.rotation);
+		let forward = glMatrix.vec4.create();
+		forward[2] = -1.0;
+		glMatrix.vec4.transformMat4(forward, forward, dir); 
+		let left = glMatrix.vec4.create();
+		left[0] = -1.0;
+		glMatrix.vec4.transformMat4(left, left, dir); 
+
+		if(pressedKeys["KeyD"] || pressedKeys["ArrowRight"]) {
+			camera.position = [camera.position[0] - left[0] * 0.1, camera.position[1], camera.position[2] - left[2] * 0.1];
 		}
-		if(pressedKeys["ArrowLeft"]) {
-			pos[0] -= 0.1;
+		if(pressedKeys["KeyA"] || pressedKeys["ArrowLeft"]) {
+			camera.position = [camera.position[0] + left[0] * 0.1, camera.position[1], camera.position[2] + left[2] * 0.1];
 		}
-		if(pressedKeys["ArrowUp"]) {
-			pos[2] -= 0.1;
+		if(pressedKeys["KeyW"] || pressedKeys["ArrowUp"]) {
+			camera.position = [camera.position[0] + forward[0] * 0.1, camera.position[1], camera.position[2] + forward[2] * 0.1];
 		}
-		if(pressedKeys["ArrowDown"]) {
-			pos[2] += 0.1;
+		if(pressedKeys["KeyS"] || pressedKeys["ArrowDown"]) {
+			camera.position = [camera.position[0] - forward[0] * 0.1, camera.position[1], camera.position[2] - forward[2] * 0.1];
 		}
 
-		if(mouse.pressedButtons[0]) {
-			rot[1] += mouse.velocity[0] * 0.01;
-			rot[0] += mouse.velocity[1] * 0.01;
-		}
+		camera.aspect = canvas.width / canvas.height;
 
-		if(pressedKeys["KeyE"]) {
-			canvas.requestFullscreen();
-			canvas.requestPointerLock();
-		}
-
-		glMatrix.mat4.translate(transMat, identityMatrix, [0.0, 2.5, 0.0]);
-		transformTRS(transMat, transMat, pos, rot);
-		glMatrix.mat4.translate(transMat, transMat, [0.0, -2.5, 0.0]);
-
-		material.setModel(transMat);
-		material2.setModel(transMat);
-
-
+		camera.applyMatrices(material);
+		camera.applyMatrices(material2);
 
 		gl.viewport(0, 0, canvas.width, canvas.height); 
 		renderer.clear([0.3, 1.0, 0.4, 1.0]); 
