@@ -67,15 +67,17 @@ function beginGame() {
 	material.setModel(tmat);
 	const material2 = new ezgfx.Material();
 	material2.setModel(tmat);
+
 	material.setColor([1.0, 0.3, 0.3, 1.0]);
 	material2.setColor([0.3, 0.3, 1.0, 1.0]);
 
 	canvas.requestFullscreen();
 	
-	camera.position[1] = 4.5;
+	camera.position[1] = 4.3;
 
+	let lastTime = Date.now();
 	let pointer_locked = false;
-	function onFrame() { 
+	function onFrame(now) { 
 		if(!pointer_locked) {
 			if(!(document.pointerLockElement === canvas)) {
 				canvas.requestPointerLock();
@@ -85,29 +87,36 @@ function beginGame() {
 			}
 		}
 
-		camera.rotation = [camera.rotation[0], camera.rotation[1] - mouse.velocity[0] * 0.01, camera.rotation[2]];
-		camera.rotation = [camera.rotation[0] - mouse.velocity[1] * 0.01, camera.rotation[1], camera.rotation[2]];
+		const deltaTime = (now - lastTime) / 1000.0;
+		lastTime = now;
 
-		let dir = glMatrix.mat4.create();
+		console.log(deltaTime);
+
+		camera.rotation = [camera.rotation[0], camera.rotation[1] - mouse.velocity[0] * deltaTime, camera.rotation[2]];
+		camera.rotation = [camera.rotation[0] - mouse.velocity[1] * deltaTime, camera.rotation[1], camera.rotation[2]];
+
+		let dir = glMatrix.mat4.create(); 
 		transformTRS(dir, dir, [0.0, 0.0, 0.0], camera.rotation);
+		
 		let forward = glMatrix.vec4.create();
 		forward[2] = -1.0;
-		glMatrix.vec4.transformMat4(forward, forward, dir); 
-		let left = glMatrix.vec4.create();
-		left[0] = -1.0;
-		glMatrix.vec4.transformMat4(left, left, dir); 
+		glMatrix.vec4.transformMat4(forward, forward, dir);
 
 		if(pressedKeys["KeyD"] || pressedKeys["ArrowRight"]) {
-			camera.position = [camera.position[0] - left[0] * 0.1, camera.position[1], camera.position[2] - left[2] * 0.1];
+			camera.position[0] -= forward[2] * deltaTime * 10.0;
+			camera.position[2] += forward[0] * deltaTime * 10.0;
 		}
 		if(pressedKeys["KeyA"] || pressedKeys["ArrowLeft"]) {
-			camera.position = [camera.position[0] + left[0] * 0.1, camera.position[1], camera.position[2] + left[2] * 0.1];
+			camera.position[0] += forward[2] * deltaTime * 10.0;
+			camera.position[2] -= forward[0] * deltaTime * 10.0;
 		}
 		if(pressedKeys["KeyW"] || pressedKeys["ArrowUp"]) {
-			camera.position = [camera.position[0] + forward[0] * 0.1, camera.position[1], camera.position[2] + forward[2] * 0.1];
+			camera.position[0] += forward[0] * deltaTime * 10.0;
+			camera.position[2] += forward[2] * deltaTime * 10.0;
 		}
 		if(pressedKeys["KeyS"] || pressedKeys["ArrowDown"]) {
-			camera.position = [camera.position[0] - forward[0] * 0.1, camera.position[1], camera.position[2] - forward[2] * 0.1];
+			camera.position[0] -= forward[0] * deltaTime * 10.0;
+			camera.position[2] -= forward[2] * deltaTime * 10.0;
 		}
 
 		camera.aspect = canvas.width / canvas.height;
