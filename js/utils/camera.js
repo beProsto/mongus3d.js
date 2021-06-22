@@ -20,16 +20,13 @@ class Camera {
 			transformTRS(this._view, ezgfxGlobals.identityMatrix, this._position, this._rotation);
 			glMatrix.mat4.invert(this._view, this._view);
 		}
-
 	}
-
 	updateProj() {
 		if(!this.uptodate_proj) {
 			this.uptodate_proj = true;
 
-			glMatrix.mat4.perspective(this._projection, this._fov, this._aspect, 0.1, 1000.0);
+			glMatrix.mat4.perspective(this._projection, this._fov, this._aspect, 0.1, 500.0);
 		}
-
 	}
 
 	update() {
@@ -70,8 +67,9 @@ class Camera {
 	get aspect() {
 		return this._aspect;
 	}
+
 	
-	set position(a = [0.0, 0.0, 0.0]) {
+	set position(a) {
 		if(this._position != a){
 			this.uptodate = false;
 			this.uptodate_view = false;
@@ -79,11 +77,45 @@ class Camera {
 			this._position = a;
 		}
 	}
+	set positionX(a) {
+		if(this._position[0] != a){
+			this.uptodate = false;
+			this.uptodate_view = false;
+			
+			this._position[0] = a;
+		}
+	}
+	set positionY(a) {
+		if(this._position[1] != a){
+			this.uptodate = false;
+			this.uptodate_view = false;
+			
+			this._position[1] = a;
+		}
+	}
+	set positionZ(a) {
+		if(this._position[2] != a){
+			this.uptodate = false;
+			this.uptodate_view = false;
+			
+			this._position[2] = a;
+		}
+	}
 	get position() {
 		return this._position;
 	}
+	get positionX() {
+		return this._position[0];
+	}
+	get positionY() {
+		return this._position[1];
+	}
+	get positionZ() {
+		return this._position[2];
+	}
+
 	
-	set rotation(a = [0.0, 0.0, 0.0]) {
+	set rotation(a) {
 		if(this._rotation != a){
 			this.uptodate = false;
 			this.uptodate_view = false;
@@ -91,8 +123,41 @@ class Camera {
 			this._rotation = a;
 		}
 	}
+	set rotationX(a) {
+		if(this._rotation[0] != a){
+			this.uptodate = false;
+			this.uptodate_view = false;
+			
+			this._rotation[0] = a;
+		}
+	}
+	set rotationY(a) {
+		if(this._rotation[1] != a){
+			this.uptodate = false;
+			this.uptodate_view = false;
+			
+			this._rotation[1] = a;
+		}
+	}
+	set rotationZ(a) {
+		if(this._rotation[2] != a){
+			this.uptodate = false;
+			this.uptodate_view = false;
+			
+			this._rotation[2] = a;
+		}
+	}
 	get rotation() {
 		return this._rotation;
+	}
+	get rotationX() {
+		return this._rotation[0];
+	}
+	get rotationY() {
+		return this._rotation[1];
+	}
+	get rotationZ() {
+		return this._rotation[2];
 	}
 
 	get view() {

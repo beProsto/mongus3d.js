@@ -1,6 +1,19 @@
 let  gl = null; // a global variable, we will assign our WebGL/WebGL2 context to it
 
 const ezgl = { // inside of this object there will be all the basic abstraction
+	init: function() {
+		gl = canvas.getContext("webgl2"); 
+		gl.webgl2 = true;
+		if(!gl) { 
+			console.warn("Browser does not support WebGL2, running the game in WebGL mode.");
+			gl = canvas.getContext("webgl"); 
+			gl.webgl2 = false;
+			if(!gl) {
+				alert("Browser does not support WebGL.");
+				return; 
+			}
+		}
+	},
 	VertexBufferWGL2: class { // both vertex buffer and vertex array, whereas the vertex array is here only to store the vertex layout
 		constructor() {
 			this.va = gl.createVertexArray();
