@@ -34,9 +34,15 @@ document.getElementById("play-button").onclick = function() {
 function beginGame() {
 	if(canvas == null) { canvas = document.createElement("canvas"); } 
 	gl = canvas.getContext("webgl2"); 
+	gl.webgl2 = true;
 	if(!gl) { 
-		alert("This browser does not support WebGL 2."); 
-		return; 
+		console.warn("Browser does not support WebGL2, running the game in WebGL mode.");
+		gl = canvas.getContext("webgl"); 
+		gl.webgl2 = false;
+		if(!gl) {
+			alert("Browser does not support WebGL.");
+			return; 
+		}
 	}
 	canvas.style = "position: absolute; width: 100%; height: 100%; left: 0; top: 0; right: 0; bottom: 0; margin: 0; z-index: -1;";
 	document.body.appendChild(canvas); 
@@ -89,8 +95,6 @@ function beginGame() {
 
 		const deltaTime = (now - lastTime) / 1000.0;
 		lastTime = now;
-
-		console.log(deltaTime);
 
 		camera.rotation = [camera.rotation[0], camera.rotation[1] - mouse.velocity[0] * deltaTime, camera.rotation[2]];
 		camera.rotation = [camera.rotation[0] - mouse.velocity[1] * deltaTime, camera.rotation[1], camera.rotation[2]];

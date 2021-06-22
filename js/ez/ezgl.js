@@ -1,16 +1,7 @@
 let  gl = null; // a global variable, we will assign our WebGL/WebGL2 context to it
 
-function contextIsWebGL() {
-	if(!gl) return false;
-	return (typeof WebGL2RenderingContext !== 'undefined' && gl instanceof WebGL2RenderingContext);
-}
-function contextIsWebGL2() {
-	if(!gl) return false;
-	return (typeof WebGLRenderingContext !== 'undefined' && gl instanceof WebGLRenderingContext);
-}
-
 const ezgl = { // inside of this object there will be all the basic abstraction
-	VertexBuffer: class { // both vertex buffer and vertex array, whereas the vertex array is here only to store the vertex layout
+	VertexBufferWGL2: class { // both vertex buffer and vertex array, whereas the vertex array is here only to store the vertex layout
 		constructor() {
 			this.va = gl.createVertexArray();
 			gl.bindVertexArray(this.va);
@@ -24,6 +15,8 @@ const ezgl = { // inside of this object there will be all the basic abstraction
 			
 			gl.bindBuffer(gl.ARRAY_BUFFER, null);
 			gl.bindVertexArray(null);
+
+			this.vertexLayout();
 		}
 		free() { // free functions - they just delete all the WebGL2 objects created with the object
 			gl.deleteBuffer(this.vb);
@@ -31,6 +24,7 @@ const ezgl = { // inside of this object there will be all the basic abstraction
 		}
 
 		vertexLayout(layout = [3, 2, 3]) { // this function supplies the vertex layout - it says how many elements there are per vertex, and how much floats they take up. we will mostly use the [3, 2, 3] combination, because it's the one used by OBJ models
+			this.stride = 0;
 			for(let i = 0; i < layout.length; i++) {
 				this.stride += layout[i] * 4;
 			}
@@ -69,6 +63,58 @@ const ezgl = { // inside of this object there will be all the basic abstraction
 
 			gl.bindBuffer(gl.ARRAY_BUFFER, null);
 			gl.bindVertexArray(null);
+		}
+		
+	},
+	VertexBufferWGL: class { // vertex buffer with vertex array substituted
+		constructor() {
+			this.vb = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.vb);
+
+			this.stride = 0;
+			this.length = 0;
+			this.vertices = 0;
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, null);
+		}
+		free() { // free functions - they just delete all the WebGL2 objects created with the object
+			gl.deleteBuffer(this.vb);
+		}
+
+		vertexLayout(layout = [3, 2, 3]) { // this function supplies the vertex layout - it says how many elements there are per vertex, and how much floats they take up. we will mostly use the [3, 2, 3] combination, because it's the one used by OBJ models
+			this.stride = 0;
+			for(let i = 0; i < layout.length; i++) {
+				this.stride += layout[i] * 4;
+			}
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.vb);
+
+			let istride = 0;
+			for(let i = 0; i < layout.length; i++) {
+				gl.vertexAttribPointer(i, layout[i], gl.FLOAT, false, this.stride, istride);
+				gl.enableVertexAttribArray(i);
+
+				istride += layout[i] * 4;
+			}
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+			this.vertices = this.length / (this.stride / 4);
+		}
+		vertexData(data) { // simply takes in a Float32Array and supplies it to the buffer
+			this.length = data.length;
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.vb);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+			gl.bindBuffer(gl.ARRAY_BUFFER, null);
+			this.vertices = this.length / this.stride;
+		}
+		draw() { // draws our mesh
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.vb);
+			
+			this.vertexLayout();
+			gl.drawArrays(gl.TRIANGLES, 0, this.vertices);
+
+			gl.bindBuffer(gl.ARRAY_BUFFER, null);
 		}
 		
 	},

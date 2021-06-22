@@ -2,8 +2,13 @@ let ezgfxGlobals = {}; // not for use by the user - it's just some global consta
 const ezgfx = {
 	Mesh: class {
 		constructor() {
-			this.vertexbuffer = new ezgl.VertexBuffer();
-			this.vertexbuffer.vertexLayout([3, 2, 3]);
+			this.vertexbuffer = null;
+			if(gl.webgl2) {
+				this.vertexbuffer = new ezgl.VertexBufferWGL2();
+			}
+			else {
+				this.vertexbuffer = new ezgl.VertexBufferWGL();
+			}
 		}
 		free() {
 			this.vertexbuffer.free();
@@ -118,18 +123,6 @@ const ezgfx = {
 			this.masks = gl.COLOR_BUFFER_BIT;
 			this.depthTest = false;
 
-			ezgfxGlobals.fSSC0 = "#version 300 es\n\
-			precision mediump float;\n\
-			\n\
-			out vec4 o_Color;\n\
-			\n\
-			in vec2 v_TexCoord;\n\
-			\n\
-			uniform vec4 u_Color;\n\
-			uniform sampler2D u_TexID[16];\n";
-			ezgfxGlobals.fSSC1 = "\nvoid main() {\n\
-				o_Color = shader();\n\
-			}";
 			ezgfxGlobals.vSSC0 = "#version 300 es\n\
 			precision mediump float;\n\
 			\n\
@@ -147,6 +140,44 @@ const ezgfx = {
 				v_TexCoord = texcoord();\n\
 				v_TexCoord.y = 1.0 - v_TexCoord.y;\n\
 			}";
+
+			ezgfxGlobals.fSSC0 = "#version 300 es\n\
+			precision mediump float;\n\
+			\n\
+			out vec4 o_Color;\n\
+			\n\
+			in vec2 v_TexCoord;\n\
+			\n\
+			uniform vec4 u_Color;\n\
+			uniform sampler2D u_TexID[16];\n";
+			ezgfxGlobals.fSSC1 = "\nvoid main() {\n\
+				o_Color = shader();\n\
+			}";
+
+			if(!gl.webgl2) {
+				ezgfxGlobals.vSSC0 = "precision mediump float;\n\
+				\n\
+				attribute vec3 a_Position;\n\
+				attribute vec2 a_TexCoord;\n\
+				attribute vec3 a_Normal;\n\
+				\n\
+				uniform mat4 u_Projection;\n\
+				uniform mat4 u_View;\n\
+				uniform mat4 u_Model;\n\
+				\n\
+				varying vec2 v_TexCoord;\n";
+
+				ezgfxGlobals.fSSC0 = "precision mediump float;\n\
+				\n\
+				varying vec2 v_TexCoord;\n\
+				\n\
+				uniform vec4 u_Color;\n\
+				uniform sampler2D u_TexID[16];\n";
+				ezgfxGlobals.fSSC1 = "\nvoid main() {\n\
+					gl_FragColor = shader();\n\
+				}";
+			}
+
 			ezgfxGlobals.vSS = new ezgl.SubShader(gl.VERTEX_SHADER, ezgfxGlobals.vSSC0 + "\nvec4 vertex() { return u_Projection * u_View * u_Model * vec4(a_Position, 1.0); }\nvec2 texcoord() { return a_TexCoord; }\n" + ezgfxGlobals.vSSC1);
 			ezgfxGlobals.fSS = new ezgl.SubShader(gl.FRAGMENT_SHADER, ezgfxGlobals.fSSC0 + "\nvec4 shader() { return u_Color; }\n" + ezgfxGlobals.fSSC1);
 				
