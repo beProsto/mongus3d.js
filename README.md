@@ -3,5 +3,5 @@
 ## Now run the server using the run.sh script
 ## If you want clear output run
 - `node server.js`
-- `ssh -R 80:localhost:8080 ssh.localhost.run` (pretty sure this one is linux-only)
+- `ssh -R 80:localhost:80 ssh.localhost.run` (pretty sure this one is linux-only)
 ## In seperate terminals
