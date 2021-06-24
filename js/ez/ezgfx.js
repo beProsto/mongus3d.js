@@ -84,7 +84,6 @@ const ezgfx = {
 			for(let i = 0; i < 16; i++) {
 				this.shader.set1i("u_TexID[" + i + "]", i);
 			}
-			this.shader.unbind();
 		}
 		free() {
 			this.shader.free();
@@ -93,23 +92,19 @@ const ezgfx = {
 		setProjection(mat) {
 			this.shader.bind();
 			this.shader.set4x4f("u_Projection", mat);
-			this.shader.unbind();
 		}
 		setView(mat) {
 			this.shader.bind();
 			this.shader.set4x4f("u_View", mat);
-			this.shader.unbind();
 		}
 		setModel(mat) {
 			this.shader.bind();
 			this.shader.set4x4f("u_Model", mat);
-			this.shader.unbind();
 		}
 
 		setColor(rgba = [1.0, 1.0, 1.0, 1.0]) {
 			this.shader.bind();
 			this.shader.set4f("u_Color", rgba[0], rgba[1], rgba[2], rgba[3], rgba[4]);
-			this.shader.unbind();
 		}
 		setTexture(texture, slot = 0) {
 			this.textures[slot] = texture.texture;
@@ -228,7 +223,6 @@ const ezgfx = {
 				}
 			}
 			mesh.vertexbuffer.draw();
-			material.shader.unbind();
 		}
 
 		viewport(x, y, w, h, camera = null) {
