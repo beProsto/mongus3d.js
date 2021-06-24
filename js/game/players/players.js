@@ -1,3 +1,5 @@
+const playersListUrl = "/players";
+
 class Players {
 	constructor() {
 		this.meshIdle = new ezgfx.Mesh();
@@ -10,11 +12,13 @@ class Players {
 
 		this.materialBody.setColor([1.0, 0.3, 0.3, 1.0]);
 		this.materialEye.setColor([0.3, 0.3, 1.0, 1.0]);
+
+		this.players = [];
 	}
 
-	renderPlayer(r, c, pos = [0.0, 0.0, 0.0], rotY = 0.0) {
+	renderPlayer(r, c, posX = 0.0, posZ = 0.0, rotY = 0.0) {
 		const mat = glMatrix.mat4.create();
-		transformTRS(mat, mat, pos, [0.0, rotY, 0.0]);
+		transformTRS(mat, mat, [posX, 0.0, posZ], [0.0, rotY, 0.0]);
 
 		this.materialBody.setModel(mat);
 		this.materialEye.setModel(mat);
