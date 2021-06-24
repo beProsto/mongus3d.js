@@ -48,6 +48,9 @@
 		<!-- An External Math library for WebGL <https://glmatrix.net/> -->
 		<script type="text/javascript" src="js/ext/glmatrix.js"></script>
 
+		<!-- Global variables -->
+		<script type="text/javascript" src="js/game/globals.js"></script>
+
 		<!-- General usage utilities for keyboard and mouse support -->
 		<script type="text/javascript" src="js/utils/keyboard.js"></script>
 		<script type="text/javascript" src="js/utils/mouse.js"></script>
@@ -55,6 +58,8 @@
 		<script type="text/javascript" src="js/utils/canvas.js"></script>
 		<script type="text/javascript" src="js/utils/transform.js"></script>
 		<script type="text/javascript" src="js/utils/camera.js"></script>
+		<script type="text/javascript" src="js/utils/deltatime.js"></script>
+		<script type="text/javascript" src="js/utils/fsptrlock.js"></script>
 
 		<!-- EZ is an abstraction layer that makes it easier to use WebGL and WebGL2 -->
 		<script type="text/javascript" src="js/ez/ezgl.js"></script>
@@ -65,8 +70,10 @@
 		<script type="text/javascript" src="js/game/players/player.js"></script>
 		<script type="text/javascript" src="js/game/players/players.js"></script>
 
-		<!-- Game script - contains the beginGame function and the main loop -->
+		<!-- Contains the actual game script -->
 		<script type="text/javascript" src="js/game/game.js"></script>
+		<!-- Contains the beginGame function -->
+		<script type="text/javascript" src="js/game/begin.js"></script>
 	
 		<!-- Starting script - manages the play button. 
 			Requests if the username has been registered and if it wasn't, begins the game. -->

@@ -230,5 +230,10 @@ const ezgfx = {
 			mesh.vertexbuffer.draw();
 			material.shader.unbind();
 		}
+
+		viewport(x, y, w, h, camera = null) {
+			gl.viewport(x, y, w, h);
+			if(camera) {camera.aspect = w / h;} 
+		}
 	}
 };

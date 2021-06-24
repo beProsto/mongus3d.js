@@ -7,7 +7,7 @@ playButton.onclick = function() {
 		playButton.disabled = true;
 
 		if(document.getElementById("nickInput").value) {
-			nick = document.getElementById("nickInput").value;
+			globals.nick = document.getElementById("nickInput").value;
 			let xhr = new XMLHttpRequest();
 			xhr.open("PUT", nickCheckUrl); 
 			xhr.onload = function () {
@@ -25,7 +25,7 @@ playButton.onclick = function() {
 					console.error(txt);
 				}
 			};
-			xhr.send(nick);
+			xhr.send(globals.nick);
 		}
 		else {
 			playButton.disabled = false;
