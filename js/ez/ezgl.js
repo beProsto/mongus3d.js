@@ -76,7 +76,6 @@ const ezgl = { // inside of this object there will be all the basic abstraction
 		}
 
 		vertexLayout() { // this function supplies the vertex layout - it says how many elements there are per vertex, and how much floats they take up. we will mostly use the [3, 2, 3] combination, because it's the one used by OBJ models
-			gl.bindVertexArray(this.va);
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.vb);
 
 			gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 32, 0);
