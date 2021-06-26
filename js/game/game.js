@@ -12,29 +12,20 @@ class Game {
 	update(deltaTime) {
 		this.camera.rotationY -= mouse.velocity[0] * deltaTime;
 		this.camera.rotationX -= mouse.velocity[1] * deltaTime;
+		
+		this.camera.rotationX = Math.min(Math.max(this.camera.rotationX, -1.570795), 1.570795);
 
-		if(this.camera.rotationX > 1.570795) this.camera.rotationX = 1.570795;
-		if(this.camera.rotationX < -1.570795) this.camera.rotationX = -1.570795;
+		const sinRotY = Math.sin(this.camera.rotationY);
+		const cosRotY = Math.cos(this.camera.rotationY);
 
-		const forwardX = -Math.sin(this.camera.rotationY);
-		const forwardZ = -Math.cos(this.camera.rotationY);
+		const backwardInput = pressedKeys["KeyS"] | 0 - pressedKeys["KeyW"] | 0;
+		const rightInput = pressedKeys["KeyD"] | 0 - pressedKeys["KeyA"] | 0;
 
-		if(pressedKeys["KeyW"] || mouse.wheel > 0.0) {
-			this.camera.positionX += forwardX * deltaTime * 10.0;
-			this.camera.positionZ += forwardZ * deltaTime * 10.0;
-		}
-		if(pressedKeys["KeyS"] || mouse.wheel < 0.0) {
-			this.camera.positionX -= forwardX * deltaTime * 10.0;
-			this.camera.positionZ -= forwardZ * deltaTime * 10.0;
-		}
-		if(pressedKeys["KeyA"]) {
-			this.camera.positionX += forwardZ * deltaTime * 10.0;
-			this.camera.positionZ -= forwardX * deltaTime * 10.0;
-		}
-		if(pressedKeys["KeyD"]) {
-			this.camera.positionX -= forwardZ * deltaTime * 10.0;
-			this.camera.positionZ += forwardX * deltaTime * 10.0;
-		}
+		const velX = backwardInput * sinRotY + rightInput * cosRotY;
+		const velZ = backwardInput * cosRotY + rightInput * -sinRotY;
+
+		this.camera.positionX += velX * deltaTime * 10.0;
+		this.camera.positionZ += velZ * deltaTime * 10.0;
 
 		this.renderer.viewport(0, 0, canvas.width, canvas.height, this.camera);
 		this.renderer.clear([0.3, 1.0, 0.4, 1.0]); 
