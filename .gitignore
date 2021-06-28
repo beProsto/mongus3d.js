@@ -1,1 +1,5 @@
 nodejs_server/node_modules/
+*.exe
+*.exe~
+*~
+*#
