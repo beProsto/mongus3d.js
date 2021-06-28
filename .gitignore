@@ -1,5 +1,4 @@
 nodejs_server/node_modules/
-**.exe
-**.exe~
+go_server/go_server.exe
 *~
 *#
