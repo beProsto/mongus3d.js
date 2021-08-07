@@ -1,6 +1,8 @@
 const nickCheckUrl = "/nicknamecheck";
 
 const playButton = document.getElementById("play-button");
+playButton.disabled = true;
+playButton.innerText = "Connecting...";
 
 playButton.onclick = function() {
 	if(!playButton.disabled) {
@@ -36,37 +38,30 @@ playButton.onclick = function() {
 
 // Setting up the multiplayer WebRTC connection
 
-//Data Channels
-let UDPChan;
-let TCPChan;
+let sends = 0;
+let numMessages = 0;
 
-//Player Vars
-let playerTag;
-let Updates;
-let previousUpdates;
-
-let ws;
 
 // I'm going to leave it as and event listener addition, but remember that it's not how I usually do it lol.
 window.addEventListener("load", (evt) => {
-	ws = new WebSocket("ws://192.168.1.54:80/echo");	//address to connect to, /echo triggers go echo function
+	globals.ws = new WebSocket("ws://192.168.1.54:80/echo");	//address to connect to, /echo triggers go echo function
 
-	ws.onopen = function(evt) {
+	globals.ws.onopen = (evt) => {
 		console.log("OPEN");
-	}
-	ws.onclose = function(evt) {
+	};
+	globals.ws.onclose = (evt) => {
 			console.log("CLOSE");
-			ws = null;
-	}
-	ws.onmessage = function(evt) {
+			globals.ws = null;
+	};
+	globals.ws.onmessage = (evt) => {
 			console.log("RESPONSE: " + evt.data);
 			//we're expecting the first websocket message to be the server's SDP
 			//so we'll go ahead and start the WEBRTC session with that SDP
 			window.startSession(evt.data)
-	}
-	ws.onerror = function(evt) {
+	};
+	globals.ws.onerror = (evt) => {
 			console.log("ERROR: " + evt.data);
-	}
+	};
 
 	//=====================WEBRTC===========================
 
@@ -76,70 +71,64 @@ window.addEventListener("load", (evt) => {
 				urls: 'stun:stun.l.google.com:19302'
 			}
 		]
-	})
+	});
 
 
-	var sends = 0;
-
-	pc.onsignalingstatechange = e => console.log(pc.signalingState)
-	pc.oniceconnectionstatechange = e => {
-		console.log(pc.iceConnectionState)
+	pc.onsignalingstatechange = (e) => console.log(pc.signalingState);
+	pc.oniceconnectionstatechange = (e) => {
+		console.log(pc.iceConnectionState);
 		if (pc.iceConnectionState == "connected") {
-			animate(step); //=================== STARTS THE GAME - Means multiplayer is enabled by this point ============================
+			playButton.disabled = false; //=================== STARTS THE GAME - Means multiplayer is enabled by this point ============================
+			playButton.innerText = "pley";
 		}
-	}
+	};
 	pc.onicecandidate = event => {
-		if(sends == 0){
+		if(sends == 0) {
 			//Send the original SDP, we'll send additional ice candidates from the
 			//onicecandidate event handler (trickle ICE)
-			ws.send( btoa(JSON.stringify(pc.localDescription)) )
-			console.log(pc.LocalDescription)
+			globals.ws.send(btoa(JSON.stringify(pc.localDescription))); // sends an encoded (base64) version of a strigified local descriptor 
+			console.log(pc.LocalDescription);
 
-			sends = 1
+			sends = 1;
 		}
 		//console.log(event.candidate)
-		ws.send(JSON.stringify(event.candidate))
-	}
+		globals.ws.send(JSON.stringify(event.candidate));
+	};
 
 
-
-	var previousData = 0;
-	var numMessages = 0;
-
-	function howManyMessages(){
+	setInterval(() => {
 		console.log(numMessages + " Messages Received");
-	}
-	setInterval(howManyMessages, 100000);
+	}, 100000);
 
 	pc.ondatachannel = e => {
 		if(e.channel.label == "UDP") {
-			UDPChan = e.channel;
-			console.log('New DataChannel ' + UDPChan.label);
-			console.log("Ordered: " + UDPChan.ordered);
-			console.log("MaxRetransmits: " + UDPChan.maxRetransmits);
+			globals.UDPChan = e.channel;
+			console.log('New DataChannel ' + globals.UDPChan.label);
+			console.log("Ordered: " + globals.UDPChan.ordered);
+			console.log("MaxRetransmits: " + globals.UDPChan.maxRetransmits);
 			console.log("\n");
-			UDPChan.onclose = () => console.log(UDPChan.label + ' has closed');
-			UDPChan.onopen = () => console.log(UDPChan.label + ' has opened');
+			globals.UDPChan.onclose = () => console.log(globals.UDPChan.label + ' has closed');
+			globals.UDPChan.onopen = () => console.log(globals.UDPChan.label + ' has opened');
 
-			UDPChan.onmessage = (e) => {
+			globals.UDPChan.onmessage = (e) => {
 				numMessages++;
 				//Save previous update to use for entity interpolation
-				previousUpdates = Updates;
-				Updates = JSON.parse(e.data);
+				globals.previousUpdates = globals.Updates;
+				globals.Updates = JSON.parse(e.data);
 				//console.log(e.data);
 			};
 		}
 		else if(e.channel.label == "TCP") {
-			TCPChan = e.channel;
-			console.log('New DataChannel ' + TCPChan.label);
-			console.log("Ordered: " + TCPChan.ordered);
-			console.log("MaxRetransmits: " + TCPChan.maxRetransmits);
+			globals.TCPChan = e.channel;
+			console.log('New DataChannel ' + globals.TCPChan.label);
+			console.log("Ordered: " + globals.TCPChan.ordered);
+			console.log("MaxRetransmits: " + globals.TCPChan.maxRetransmits);
 			console.log("\n");
-			TCPChan.onclose = () => console.log(TCPChan.label + ' has closed');
-			TCPChan.onopen = () => console.log(TCPChan.label + ' has opened');
-			TCPChan.onmessage = function(e){
+			globals.TCPChan.onclose = () => console.log(globals.TCPChan.label + ' has closed');
+			globals.TCPChan.onopen = () => console.log(globals.TCPChan.label + ' has opened');
+			globals.TCPChan.onmessage = function(e){
 				//The first message is expexted to be the player tag
-				playerTag = e.data;
+				globals.playerTag = e.data;
 			};
 			/* // This code is not used by us at all lol
 			// Still gonna keep it for no reason for a second
@@ -149,20 +138,20 @@ window.addEventListener("load", (evt) => {
 					return alert('Message must not be empty')
 				}
 
-				TCPChan.send(message)
+				globals.TCPChan.send(message)
 			};
 			*/
 		}
-	}
+	};
 
 	window.startSession = (e) => {
 		let sd = e;
 		if (sd === '') {
-			return alert('Session Description must not be empty')
+			return alert('Session Description must not be empty');
 		}
 
-		pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(sd)))).catch(console.log)
-		console.log("Pog")
-		pc.createAnswer().then(d => pc.setLocalDescription(d)).catch(console.log)
-	}
+		pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(sd)))).catch(console.log);
+		console.log("Pog");
+		pc.createAnswer().then(d => pc.setLocalDescription(d)).catch(console.log);
+	};
 });
