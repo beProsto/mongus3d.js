@@ -4,7 +4,7 @@ const playButton = document.getElementById("play-button");
 playButton.disabled = true;
 playButton.innerText = "Connecting...";
 
-playButton.onclick = function() {
+playButton.onclick = () => {
 	if(!playButton.disabled) {
 		playButton.disabled = true;
 
@@ -12,7 +12,7 @@ playButton.onclick = function() {
 			globals.nick = document.getElementById("nickInput").value;
 			let xhr = new XMLHttpRequest();
 			xhr.open("PUT", nickCheckUrl); 
-			xhr.onload = function () {
+			xhr.onload = () => {
 				let txt = xhr.responseText;
 				if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
 					if(txt == "ErrNickFound") {
@@ -126,7 +126,7 @@ window.addEventListener("load", (evt) => {
 			console.log("\n");
 			globals.TCPChan.onclose = () => console.log(globals.TCPChan.label + ' has closed');
 			globals.TCPChan.onopen = () => console.log(globals.TCPChan.label + ' has opened');
-			globals.TCPChan.onmessage = function(e){
+			globals.TCPChan.onmessage = (e) => {
 				//The first message is expexted to be the player tag
 				globals.playerTag = e.data;
 			};
