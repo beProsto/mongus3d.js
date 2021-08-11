@@ -144,27 +144,27 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		//fmt.Printf("Message from DataChannel '%s': '%s'\n", reliableChannel.Label(), string(msg.Data))
 
 		//fmt.Println(msg.Data)
-		if msg.Data[0] == 88 { //88 = "X"
+		if msg.Data[0] == 'X' { 
 			x, err := strconv.Atoi(string(msg.Data[1:]))
 			if err != nil {
 				fmt.Println(err)
 			}
 
 			playerSlice, ok := Updates.Load(playerTag)
-			if ok == false {
+			if !ok {
 				fmt.Println("Uh oh")
 			}
 
 			playerSlice.([]int)[0] = x
 			Updates.Store(playerTag, playerSlice)
-		} else if msg.Data[0] == 89 { //89 = "Y"
+		} else if msg.Data[0] == 'Y' {
 			y, err := strconv.Atoi(string(msg.Data[1:]))
 			if err != nil {
 				fmt.Println(err)
 			}
 
 			playerSlice, ok := Updates.Load(playerTag)
-			if ok == false {
+			if !ok {
 				fmt.Println("Uh oh")
 			}
 
