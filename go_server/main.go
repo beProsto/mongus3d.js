@@ -3,9 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -271,6 +274,18 @@ func getSyncMapReadyForSending(m *sync.Map) {
 	}
 }
 
+func nicknamecheck(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Nickname recieved:\n")
+	responseData, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	responseString := string(responseData)
+	whereClientId := strings.Index(responseString, ":")
+
+	fmt.Println(responseString)
+}
+
 //Updates Map
 var Updates sync.Map
 var UpdatesString string
@@ -307,7 +322,8 @@ func main() {
 	api = webrtc.NewAPI(webrtc.WithSettingEngine(settingEngine))
 
 	fileServer := http.FileServer(http.Dir("../"))
-	http.HandleFunc("/echo", echo) //this request comes from webrtc.html
+	http.HandleFunc("/echo", echo)                   //this request comes from webrtc.html
+	http.HandleFunc("/nicknamecheck", nicknamecheck) //this request comes from webrtc.html
 	http.Handle("/", fileServer)
 
 	err = http.ListenAndServe(":80", nil) //Http server blocks
