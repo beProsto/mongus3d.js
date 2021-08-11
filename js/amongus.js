@@ -9,7 +9,7 @@ playButton.onclick = () => {
 		playButton.disabled = true;
 
 		if(document.getElementById("nickInput").value) {
-			globals.nick = document.getElementById("nickInput").value;
+			globals.nick = globals.playerTag + ":" + document.getElementById("nickInput").value;
 			let xhr = new XMLHttpRequest();
 			xhr.open("PUT", nickCheckUrl); 
 			xhr.onload = () => {
@@ -44,7 +44,7 @@ let numMessages = 0;
 
 // I'm going to leave it as and event listener addition, but remember that it's not how I usually do it lol.
 window.addEventListener("load", (evt) => {
-	globals.ws = new WebSocket("ws://192.168.1.54:80/echo");	//address to connect to, /echo triggers go echo function
+	globals.ws = new WebSocket("ws://127.0.0.1:80/echo");	//address to connect to, /echo triggers go echo function
 
 	globals.ws.onopen = (evt) => {
 		console.log("OPEN");

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -274,16 +273,54 @@ func getSyncMapReadyForSending(m *sync.Map) {
 	}
 }
 
+type nickname struct {
+	id       int
+	nickname string
+}
+
+var nicknames = make([]nickname, 0)
+
 func nicknamecheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Nickname recieved:\n")
 	responseData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(w, "ErrNickFound")
+		fmt.Println(err)
+		return
 	}
-	responseString := string(responseData)
-	whereClientId := strings.Index(responseString, ":")
 
-	fmt.Println(responseString)
+	responseString := string(responseData)
+
+	whereClientId := strings.Index(responseString, ":")
+	if whereClientId == -1 {
+		fmt.Fprintf(w, "ErrNickFound")
+		fmt.Println("Improper nick format passed")
+		return
+	}
+
+	idStr := responseString[:whereClientId]
+	idNum, err := strconv.Atoi(idStr)
+	if err != nil {
+		fmt.Fprintf(w, "ErrNickFound")
+		fmt.Println(err)
+		return
+	}
+
+	nickStr := responseString[whereClientId+1:]
+
+	for _, v := range nicknames {
+		if nickStr == v.nickname {
+			fmt.Fprintf(w, "ErrNickFound")
+			fmt.Println("Err: Nickname found!")
+			return
+		}
+	}
+
+	nick := nickname{idNum, nickStr}
+	nicknames = append(nicknames, nick)
+
+	fmt.Fprintf(w, "Posted")
+	fmt.Println(nicknames)
 }
 
 //Updates Map
