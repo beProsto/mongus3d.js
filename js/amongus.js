@@ -40,12 +40,19 @@ playButton.onclick = () => {
 
 let sends = 0;
 let numMessages = 0;
+let ipaddr = "";
 
-
-// I'm going to leave it as and event listener addition, but remember that it's not how I usually do it lol.
 window.addEventListener("load", (evt) => {
-	globals.ws = new WebSocket("ws://127.0.0.1:80/echo");	//address to connect to, /echo triggers go echo function
+	fetch("/ip").then(response => {
+		response.text().then(ipaddrfetched => {
+			ipaddr = ipaddrfetched;
+			globals.ws = new WebSocket("ws://" + ipaddr + ":80/echo");	//address to connect to, /echo triggers go echo function
+			establishConnection();
+		});
+	});
+});
 
+function establishConnection() {
 	globals.ws.onopen = (evt) => {
 		console.log("OPEN");
 	};
@@ -130,17 +137,6 @@ window.addEventListener("load", (evt) => {
 				//The first message is expexted to be the player tag
 				globals.playerTag = e.data;
 			};
-			/* // This code is not used by us at all lol
-			// Still gonna keep it for no reason for a second
-			window.sendMessage = () => {
-				let message = document.getElementById('message').value
-				if (message === '') {
-					return alert('Message must not be empty')
-				}
-
-				globals.TCPChan.send(message)
-			};
-			*/
 		}
 	};
 
@@ -154,4 +150,4 @@ window.addEventListener("load", (evt) => {
 		console.log("Pog");
 		pc.createAnswer().then(d => pc.setLocalDescription(d)).catch(console.log);
 	};
-});
+}

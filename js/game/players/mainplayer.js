@@ -54,4 +54,4 @@ class MainPlayer {
 			globals.TCPChan.send("YR" + this.camera.rotationY);
 		}
 	}
-};
+}
