@@ -86,13 +86,13 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			playerTag = strconv.Itoa(NumberOfPlayers)
 			fmt.Println(playerTag)
 
-			//Store a slice for player x, y, and other data
-			//Initially we'll just have starting x and y values
-			Updates.Store(playerTag, []int{0, 0})
+			//Store a slice for player x, z, yRotation, and other data
+			//Initially we'll just have starting x, z and yRotation values
+			Updates.Store(playerTag, []float32{0.0, 0.0, 0.0})
 
 		} else if connectionState == 5 || connectionState == 6 || connectionState == 7 {
 			Updates.Delete(playerTag)
-			fmt.Println("Deleted Player")
+			fmt.Println("Deleted Player " + playerTag)
 
 			err := peerConnection.Close() //deletes all references to this peerconnection in mem and same for ICE agent (ICE agent releases the "closed" status)
 			if err != nil {               //https://www.w3.org/TR/webrtc/#dom-rtcpeerconnection-close
@@ -144,31 +144,50 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		//fmt.Printf("Message from DataChannel '%s': '%s'\n", reliableChannel.Label(), string(msg.Data))
 
 		//fmt.Println(msg.Data)
-		if msg.Data[0] == 'X' { 
-			x, err := strconv.Atoi(string(msg.Data[1:]))
+		if msg.Data[0] == 'X' {
+			x, err := strconv.ParseFloat(string(msg.Data[1:]), 32)
 			if err != nil {
 				fmt.Println(err)
 			}
+
+			xF32 := float32(x)
 
 			playerSlice, ok := Updates.Load(playerTag)
 			if !ok {
 				fmt.Println("Uh oh")
 			}
 
-			playerSlice.([]int)[0] = x
+			playerSlice.([]float32)[0] = xF32
 			Updates.Store(playerTag, playerSlice)
-		} else if msg.Data[0] == 'Y' {
-			y, err := strconv.Atoi(string(msg.Data[1:]))
+		} else if msg.Data[0] == 'Z' {
+			z, err := strconv.ParseFloat(string(msg.Data[1:]), 32)
 			if err != nil {
 				fmt.Println(err)
 			}
+
+			zF32 := float32(z)
 
 			playerSlice, ok := Updates.Load(playerTag)
 			if !ok {
 				fmt.Println("Uh oh")
 			}
 
-			playerSlice.([]int)[1] = y
+			playerSlice.([]float32)[1] = zF32
+			Updates.Store(playerTag, playerSlice)
+		} else if string(msg.Data[:2]) == "YR" {
+			yRot, err := strconv.ParseFloat(string(msg.Data[2:]), 32)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			yRotF32 := float32(yRot)
+
+			playerSlice, ok := Updates.Load(playerTag)
+			if !ok {
+				fmt.Println("Uh oh")
+			}
+
+			playerSlice.([]float32)[2] = yRotF32
 			Updates.Store(playerTag, playerSlice)
 		}
 	})
@@ -258,9 +277,9 @@ func getSyncMapReadyForSending(m *sync.Map) {
 	for {
 		time.Sleep(time.Millisecond)
 
-		tmpMap := make(map[string][]int)
+		tmpMap := make(map[string][]float32)
 		m.Range(func(k, v interface{}) bool {
-			tmpMap[k.(string)] = v.([]int)
+			tmpMap[k.(string)] = v.([]float32)
 			return true
 		})
 
@@ -329,7 +348,6 @@ var UpdatesString string
 var NumberOfPlayers int
 
 func main() {
-
 	go getSyncMapReadyForSending(&Updates)
 
 	// Listen on UDP Port 80, will be used for all WebRTC traffic
