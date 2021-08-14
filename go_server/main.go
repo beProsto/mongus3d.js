@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -364,9 +365,15 @@ func main() {
 	// Create a SettingEngine, this allows non-standard WebRTC behavior
 	settingEngine := webrtc.SettingEngine{}
 
+	// Taking the address
+	ipaddr, err := ioutil.ReadFile("../ip")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//Our Public Candidate is declared here cause were not using a STUN server for discovery
 	//and just hardcoding the open port, and port forwarding webrtc traffic on the router
-	settingEngine.SetNAT1To1IPs([]string{"127.0.0.1"}, webrtc.ICECandidateTypeHost)
+	settingEngine.SetNAT1To1IPs([]string{string(ipaddr)}, webrtc.ICECandidateTypeHost)
 
 	// Configure our SettingEngine to use our UDPMux. By default a PeerConnection has
 	// no global state. The API+SettingEngine allows the user to share state between them.
