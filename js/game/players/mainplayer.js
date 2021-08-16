@@ -5,7 +5,7 @@ class MainPlayer {
 		this.lastRotY = 0.0;
 
 		this.camera = new Camera();
-		this.camera.position[1] = 4.3;
+		this.camera.positionY = 4.3;
 	}
 
 	update(deltaTime) {
@@ -26,6 +26,9 @@ class MainPlayer {
 		// limiting the camera's x rotation to be from -90 to 90 degrees
 		this.camera.rotationX = Math.min(Math.max(this.camera.rotationX, -1.570795), 1.570795);
 
+		// wrapping the camera's y rotation to not exceed 360 degrees nor to go below -360 (had problems with numbers going out of server's operational scope)
+		if(this.camera.rotationY < -6.28318530718 || this.camera.rotationY > 6.28318530718) this.camera.rotationY %= 6.28318530718;
+
 		// caching important calculations
 		const sinRotY = Math.sin(this.camera.rotationY);
 		const cosRotY = Math.cos(this.camera.rotationY);
@@ -44,14 +47,14 @@ class MainPlayer {
 	}
 
 	communication() {
-		if(this.camera.positionX != this.lastPosX) {
+		// if(this.camera.positionX != this.lastPosX) {
 			globals.TCPChan.send("X" + this.camera.positionX);
-		}
-		if(this.camera.positionZ != this.lastPosZ) {
+		// }
+		// if(this.camera.positionZ != this.lastPosZ) {
 			globals.TCPChan.send("Z" + this.camera.positionZ);
-		}
-		if(this.camera.rotationY != this.lastRotY) {
+		// }
+		// if(this.camera.rotationY != this.lastRotY) {
 			globals.TCPChan.send("YR" + this.camera.rotationY);
-		}
+		// }
 	}
 }
