@@ -1,44 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>cum-municator</title>
+	<title>cum-municator with websockets 😳</title>
 	<meta charset="utf-8">
 	<script>
-		const comDataUrl = "/chatdata.txt";
+		let ws = null;
+		let ipaddr = null;
 
-		function getChatText() {
-			let xhr = new XMLHttpRequest();
-			xhr.open("GET", comDataUrl);
-			xhr.onload = function () {
-				let txt = xhr.responseText;
-				if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
-					console.log("update!");
-					document.getElementById("chatLog").innerHTML = txt;
-				} else {
-					console.error(txt);
-				}
-			};
-			xhr.send();
+		window.addEventListener("load", (evt) => {
+			fetch("/ip").then(response => {
+				response.text().then(ipaddrfetched => {
+					ipaddr = ipaddrfetched;
+					ws = new WebSocket("ws://" + ipaddr + ":80/chat");	//address to connect to, /chat triggers go chat function
+					
+					ws.onmessage = msg => updateChat(msg);
+					ws.onclose = () => alert("chat connection closed");
+				});
+			});
+		});
+
+		function updateChat(msg) {
+			document.getElementById("chatLog").innerHTML += msg.data + "<br>";
 		}
+
 		function postTextBox() {
-			if(document.getElementById("nickInput").value) {
-				let xhr = new XMLHttpRequest();
-				xhr.open("PUT", comDataUrl); 
-				xhr.onload = function () {
-					let txt = xhr.responseText;
-					if (xhr.readyState == 4 && (xhr.status == "201" || xhr.status == "200")) {
-						console.log(txt);
-					} else {
-						console.error(txt);
-					}
-				};
-				let toSend = document.getElementById("nickInput").value + ": " + document.getElementById("chatInput").value + "<br>";
-				xhr.send(toSend);
-				document.getElementById("chatInput").value = "";
-			}
-			else {
-				alert("Nickname se ustaw wpierw");
-			}
+			ws.send(document.getElementById("nickInput").value + ": " + document.getElementById("chatInput").value);
+			document.getElementById("chatInput").value = "";
 		}
 
 		window.onkeydown = function(e) {
@@ -46,9 +33,6 @@
 				postTextBox();
 			}
 		};
-
-		getChatText();
-		setInterval(getChatText, 300);
 	</script>
 </head>
 

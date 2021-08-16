@@ -343,6 +343,29 @@ func nicknamecheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(nicknames)
 }
 
+func chat(w http.ResponseWriter, r *http.Request) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Upgrade: ", err)
+		return
+	}
+	defer c.Close()
+	fmt.Println("Chat user connected from: ", c.RemoteAddr())
+
+	for {
+		_, message, err2 := c.ReadMessage() //ReadMessage blocks until message received
+		if err2 != nil {
+			fmt.Println("read:", err)
+		}
+
+		fmt.Println(string(message))
+		err = c.WriteMessage(1, message)
+		if err != nil {
+			fmt.Println("write:", err)
+		}
+	}
+}
+
 //Updates Map
 var Updates sync.Map
 var UpdatesString string
@@ -384,8 +407,9 @@ func main() {
 	api = webrtc.NewAPI(webrtc.WithSettingEngine(settingEngine))
 
 	fileServer := http.FileServer(http.Dir("../"))
-	http.HandleFunc("/echo", echo)                   //this request comes from webrtc.html
-	http.HandleFunc("/nicknamecheck", nicknamecheck) //this request comes from webrtc.html
+	http.HandleFunc("/echo", echo)
+	http.HandleFunc("/chat", chat)
+	http.HandleFunc("/nicknamecheck", nicknamecheck)
 	http.Handle("/", fileServer)
 
 	err = http.ListenAndServe(":80", nil) //Http server blocks
