@@ -343,6 +343,8 @@ func nicknamecheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(nicknames)
 }
 
+var Clients sync.Map
+
 func chat(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -352,6 +354,8 @@ func chat(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 	fmt.Println("Chat user connected from: ", c.RemoteAddr())
 
+	Clients.Store(c.RemoteAddr(), c)
+
 	for {
 		_, message, err2 := c.ReadMessage() //ReadMessage blocks until message received
 		if err2 != nil {
@@ -359,9 +363,19 @@ func chat(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Println(string(message))
-		err = c.WriteMessage(1, message)
-		if err != nil {
-			fmt.Println("write:", err)
+
+		if string(message) != "" {
+			Clients.Range(func(key interface{}, value interface{}) bool {
+				if value.(*websocket.Conn) == nil {
+					Clients.Delete(key)
+					return true
+				}
+				err = value.(*websocket.Conn).WriteMessage(1, message)
+				if err != nil {
+					fmt.Println("write:", err)
+				}
+				return true
+			})
 		}
 	}
 }

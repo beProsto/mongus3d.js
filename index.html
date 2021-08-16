@@ -13,8 +13,8 @@
 					ipaddr = ipaddrfetched;
 					ws = new WebSocket("ws://" + ipaddr + ":80/chat");	//address to connect to, /chat triggers go chat function
 					
-					ws.onmessage = msg => updateChat(msg);
-					ws.onclose = () => alert("chat connection closed");
+					ws.onmessage = (msg) => updateChat(msg);
+					ws.onclose = () => alert("chat connection lost");
 				});
 			});
 		});
@@ -24,11 +24,16 @@
 		}
 
 		function postTextBox() {
-			ws.send(document.getElementById("nickInput").value + ": " + document.getElementById("chatInput").value);
-			document.getElementById("chatInput").value = "";
+			if(document.getElementById("nickInput").value != "") {
+				ws.send(document.getElementById("nickInput").value + ": " + document.getElementById("chatInput").value);
+				document.getElementById("chatInput").value = "";
+			}
+			else {
+				alert("choose a nickname lol");
+			}
 		}
 
-		window.onkeydown = function(e) {
+		window.onkeydown = (e) => {
 			if(e.code == "Enter") {
 				postTextBox();
 			}
