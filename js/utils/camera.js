@@ -25,7 +25,7 @@ class Camera {
 		if(!this.uptodate_proj) {
 			this.uptodate_proj = true;
 
-			glMatrix.mat4.perspective(this._projection, this._fov, this._aspect, 0.1, 500.0);
+			glMatrix.mat4.perspective(this._projection, this._fov, this._aspect, 0.1, 100.0);
 		}
 	}
 

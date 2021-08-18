@@ -47,14 +47,14 @@ class MainPlayer {
 	}
 
 	communication() {
-		// if(this.camera.positionX != this.lastPosX) {
+		if(this.camera.positionX != this.lastPosX) {
 			globals.TCPChan.send("X" + this.camera.positionX);
-		// }
-		// if(this.camera.positionZ != this.lastPosZ) {
+		}
+		if(this.camera.positionZ != this.lastPosZ) {
 			globals.TCPChan.send("Z" + this.camera.positionZ);
-		// }
-		// if(this.camera.rotationY != this.lastRotY) {
+		}
+		if(this.camera.rotationY != this.lastRotY) {
 			globals.TCPChan.send("YR" + this.camera.rotationY);
-		// }
+		}
 	}
 }
