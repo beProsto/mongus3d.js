@@ -1,5 +1,3 @@
-const playersListUrl = "/players";
-
 class Players {
 	constructor() {
 		this.meshIdle = new ezgfx.Mesh();
@@ -12,8 +10,6 @@ class Players {
 
 		this.materialBody.setColor([1.0, 0.3, 0.3, 1.0]);
 		this.materialEye.setColor([0.3, 0.3, 1.0, 1.0]);
-
-		this.players = [];
 	}
 
 	renderPlayer(r, c, posX = 0.0, posZ = 0.0, rotY = 0.0) {
