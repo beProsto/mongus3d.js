@@ -10,4 +10,4 @@ If you'd like to see this project working yourself, you just have to write your 
 2. `go build`
 3. `./go_server`
 
-Big shoutout to @wawesomeNOGUI for making this project possible via his great [webrtcGameTemplate](https://github.com/wawesomeNOGUI/webrtcGameTemplate) repository. :D
+Big shoutout to [@wawesomeNOGUI](https://github.com/wawesomeNOGUI/) for making this project possible via his great [webrtcGameTemplate](https://github.com/wawesomeNOGUI/webrtcGameTemplate) repository. :D
