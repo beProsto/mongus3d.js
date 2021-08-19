@@ -9,3 +9,5 @@ If you'd like to see this project working yourself, you just have to write your 
 1. `cd go_server`
 2. `go build`
 3. `./go_server`
+
+Big shoutout to @wawesomeNOGUI for making this project possible via his great [webrtcGameTemplate](https://github.com/wawesomeNOGUI/webrtcGameTemplate) repository. :D
