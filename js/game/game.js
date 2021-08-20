@@ -24,7 +24,7 @@ class Game {
 		// playerRotationY = this.player.camera.rotationY;
 
 		this.renderer.viewport(0, 0, canvas.width, canvas.height, this.player.camera);
-		this.renderer.clear([0.3, 1.0, 0.4, 1.0]);
+		this.renderer.clear([0.4, 0.3, 1.0, 1.0]);
 
 		this.player.camera.applyMatrices(this.boxMat);
 		this.renderer.draw(this.boxMesh, this.boxMat);
