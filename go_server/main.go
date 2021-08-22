@@ -388,9 +388,34 @@ var NumberOfPlayers int
 func main() {
 	go getSyncMapReadyForSending(&Updates)
 
+	// Taking the address
+	ipaddr, err := ioutil.ReadFile("../ip")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ipaddrsep := strings.Split(string(ipaddr), ".")
+
+	ipa0, err := strconv.Atoi(ipaddrsep[0])
+	if err != nil {
+		panic(err)
+	}
+	ipa1, err := strconv.Atoi(ipaddrsep[1])
+	if err != nil {
+		panic(err)
+	}
+	ipa2, err := strconv.Atoi(ipaddrsep[2])
+	if err != nil {
+		panic(err)
+	}
+	ipa3, err := strconv.Atoi(ipaddrsep[3])
+	if err != nil {
+		panic(err)
+	}
+
 	// Listen on UDP Port 80, will be used for all WebRTC traffic
 	udpListener, err := net.ListenUDP("udp", &net.UDPAddr{
-		IP:   net.IP{0, 0, 0, 0},
+		IP:   net.IP{byte(ipa0), byte(ipa1), byte(ipa2), byte(ipa3)},
 		Port: 80,
 	})
 	if err != nil {
@@ -401,12 +426,6 @@ func main() {
 
 	// Create a SettingEngine, this allows non-standard WebRTC behavior
 	settingEngine := webrtc.SettingEngine{}
-
-	// Taking the address
-	ipaddr, err := ioutil.ReadFile("../ip")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	//Our Public Candidate is declared here cause were not using a STUN server for discovery
 	//and just hardcoding the open port, and port forwarding webrtc traffic on the router
