@@ -394,23 +394,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ipaddrsep := strings.Split(string(ipaddr), ".")
+	var ipa0, ipa1, ipa2, ipa3 int
+	if _, err := fmt.Sscanf(string(ipaddr), "%d.%d.%d.%d", &ipa0, &ipa1, &ipa2, &ipa3); err == nil {
+		fmt.Printf("IPv4 Found: %d.%d.%d.%d\n", ipa0, ipa1, ipa2, ipa3)
+	} else {
+		fmt.Printf("Couldn't find an IPv4 Address in /ip.\n")
+		panic(err)
+	}
 
-	ipa0, err := strconv.Atoi(ipaddrsep[0])
-	if err != nil {
-		panic(err)
-	}
-	ipa1, err := strconv.Atoi(ipaddrsep[1])
-	if err != nil {
-		panic(err)
-	}
-	ipa2, err := strconv.Atoi(ipaddrsep[2])
-	if err != nil {
-		panic(err)
-	}
-	ipa3, err := strconv.Atoi(ipaddrsep[3])
-	if err != nil {
-		panic(err)
+	if ipa0 == 127 && ipa1 == 0 && ipa2 == 0 && ipa3 == 1 {
+		fmt.Printf("Detected a localhost IP Address! (127.0.01). Change it to the machine's address or WebRTC won't work!\n")
 	}
 
 	// Listen on UDP Port 80, will be used for all WebRTC traffic
