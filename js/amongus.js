@@ -46,7 +46,7 @@ window.addEventListener("load", (evt) => {
 	fetch("/ip").then(response => {
 		response.text().then(ipaddrfetched => {
 			ipaddr = ipaddrfetched;
-			globals.ws = new WebSocket("ws://" + ipaddr + ":80/echo");	//address to connect to, /echo triggers go echo function
+			globals.ws = new WebSocket("ws://" + ipaddr + "/conn");	//address to connect to, /conn triggers go echo function
 			establishConnection();
 		});
 	});

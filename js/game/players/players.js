@@ -10,6 +10,8 @@ class Players {
 
 		this.materialBody.setColor([1.0, 0.3, 0.3, 1.0]);
 		this.materialEye.setColor([0.3, 0.3, 1.0, 1.0]);
+
+		this.array = [];
 	}
 
 	renderPlayer(r, c, posX = 0.0, posZ = 0.0, rotY = 0.0) {
@@ -27,11 +29,15 @@ class Players {
 	}
 
 	renderAllPlayersExceptTheMainPlayer(r, c) {
-		for(let key in globals.Updates) {
-			if(globals.Updates.hasOwnProperty(key) && key != globals.playerTag)  {
+		for(let key in this.array) {
+			if(this.array.hasOwnProperty(key)/* && key != globals.playerTag*/)  {
 				//context.fillRect(globals.Updates[key][0], globals.Updates[key][1], 50, 50);
-				this.renderPlayer(r, c, globals.Updates[key][0], globals.Updates[key][1], globals.Updates[key][2]);
+				this.renderPlayer(r, c, this.array[key].pos[0], this.array[key].pos[1], this.array[key].pos[2]);
 			}
 		}
+	}
+
+	readAndInterpolatePlayers() {
+		
 	}
 }
